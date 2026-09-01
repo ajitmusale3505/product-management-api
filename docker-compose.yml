@@ -1,0 +1,59 @@
+services:
+
+  postgres:
+
+    image: postgres:17
+
+    container_name: product-management-postgres
+
+    environment:
+
+      POSTGRES_DB: product_management_db
+
+      POSTGRES_USER: tiger
+
+      POSTGRES_PASSWORD: tiger
+
+    ports:
+
+      - "5433:5432"
+
+    volumes:
+
+      - postgres_data:/var/lib/postgresql/data
+
+    restart: unless-stopped
+
+
+  app:
+
+    build:
+
+      context: .
+
+    container_name: product-management-api
+
+    ports:
+
+      - "8080:8080"
+
+    environment:
+
+      SPRING_PROFILES_ACTIVE: dev
+
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/product_management_db
+
+      SPRING_DATASOURCE_USERNAME: tiger
+
+      SPRING_DATASOURCE_PASSWORD: tiger
+
+    depends_on:
+
+      - postgres
+
+    restart: unless-stopped
+
+
+volumes:
+
+  postgres_data:

@@ -54,4 +54,13 @@ public class Product {
         items.remove(item);
         item.setProduct(null);
     }
+    
+    public void clearItems() {
+
+        items.forEach(
+                item -> item.setProduct(null)
+        );
+
+        items.clear();
+    }
 }

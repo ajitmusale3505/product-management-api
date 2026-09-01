@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -140,5 +141,85 @@ public class ProductController {
         return ResponseEntity.ok(
                 itemService.getItemsByProductId(productId)
         );
+    }
+    
+    @GetMapping("/search")
+    public ResponseEntity<Page<ProductResponse>> searchProducts(
+
+            @RequestParam String keyword,
+
+            @RequestParam(defaultValue = "0") int page,
+
+            @RequestParam(defaultValue = "10") int size,
+
+            @RequestParam(defaultValue = "id") String sortBy,
+
+            @RequestParam(defaultValue = "asc") String sortDirection
+    ) {
+
+        return ResponseEntity.ok(
+                productService.searchProducts(
+                        keyword,
+                        page,
+                        size,
+                        sortBy,
+                        sortDirection
+                )
+        );
+    }
+    
+    @GetMapping("/filter")
+    public ResponseEntity<Page<ProductResponse>> filterProductsByMinimumQuantity(
+
+            @RequestParam Integer minQuantity,
+
+            @RequestParam(defaultValue = "0") int page,
+
+            @RequestParam(defaultValue = "10") int size,
+
+            @RequestParam(defaultValue = "id") String sortBy,
+
+            @RequestParam(defaultValue = "asc") String sortDirection
+    ) {
+
+        return ResponseEntity.ok(
+                productService.filterProductsByMinimumQuantity(
+                        minQuantity,
+                        page,
+                        size,
+                        sortBy,
+                        sortDirection
+                )
+        );
+    }
+    
+    
+    @GetMapping("/filter/range")
+    public ResponseEntity<Page<ProductResponse>> filterProductsByQuantityRange(
+
+            @RequestParam Integer minQuantity,
+
+            @RequestParam Integer maxQuantity,
+
+            @RequestParam(defaultValue = "0") int page,
+
+            @RequestParam(defaultValue = "10") int size,
+
+            @RequestParam(defaultValue = "id") String sortBy,
+
+            @RequestParam(defaultValue = "asc") String sortDirection
+    ) {
+
+        Page<ProductResponse> products =
+                productService.filterProductsByQuantityRange(
+                        minQuantity,
+                        maxQuantity,
+                        page,
+                        size,
+                        sortBy,
+                        sortDirection
+                );
+
+        return ResponseEntity.ok(products);
     }
 }

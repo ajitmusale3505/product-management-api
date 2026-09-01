@@ -23,4 +23,29 @@ public interface ProductService {
     );
 
     void deleteProduct(Long id);
+    
+    Page<ProductResponse> searchProducts(
+            String keyword,
+            int page,
+            int size,
+            String sortBy,
+            String sortDirection
+    );
+    
+    Page<ProductResponse> filterProductsByMinimumQuantity(
+            Integer minQuantity,
+            int page,
+            int size,
+            String sortBy,
+            String sortDirection
+    );
+    
+    Page<ProductResponse> filterProductsByQuantityRange(
+            Integer minQuantity,
+            Integer maxQuantity,
+            int page,
+            int size,
+            String sortBy,
+            String sortDirection
+    );
 }

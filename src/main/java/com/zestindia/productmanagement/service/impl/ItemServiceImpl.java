@@ -29,24 +29,21 @@ public class ItemServiceImpl implements ItemService {
             ItemRequest request
     ) {
 
-        Product product =
-                productRepository
-                        .findById(productId)
-                        .orElseThrow(
-                                () ->
-                                        new ResourceNotFoundException(
-                                                "Product not found with id: "
-                                                        + productId
-                                        )
-                        );
+        Product product = productRepository
+                .findById(productId)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "Product not found with id: " + productId
+                        )
+                );
 
         Item item = Item.builder()
                 .quantity(request.getQuantity())
-                .product(product)
                 .build();
 
-        Item savedItem =
-                itemRepository.save(item);
+        product.addItem(item);
+
+        Item savedItem = itemRepository.save(item);
 
         return mapToItemResponse(savedItem);
     }

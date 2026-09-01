@@ -2,18 +2,23 @@ package com.zestindia.productmanagement.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication
+        .UsernamePasswordAuthenticationToken;
 
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context
+        .SecurityContextHolder;
 
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails
+        .UserDetails;
 
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.authentication
+        .WebAuthenticationDetailsSource;
 
 import org.springframework.stereotype.Component;
 
@@ -21,10 +26,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter
         extends OncePerRequestFilter {
+
 
     private final JwtService jwtService;
 
@@ -44,13 +51,26 @@ public class JwtAuthenticationFilter
 
 
         String authorizationHeader =
-                request.getHeader("Authorization");
 
+                request.getHeader(
+                        "Authorization"
+                );
+
+
+        /*
+         * No JWT token
+         */
 
         if (
+
                 authorizationHeader == null
+
                         ||
-                        !authorizationHeader.startsWith("Bearer ")
+
+                        !authorizationHeader.startsWith(
+                                "Bearer "
+                        )
+
         ) {
 
             filterChain.doFilter(
@@ -63,17 +83,36 @@ public class JwtAuthenticationFilter
 
 
         String jwtToken =
-                authorizationHeader.substring(7);
+
+                authorizationHeader.substring(
+                        7
+                );
 
 
         String username;
 
+
         try {
 
             username =
-                    jwtService.extractUsername(jwtToken);
 
-        } catch (Exception exception) {
+                    jwtService.extractUsername(
+                            jwtToken
+                    );
+
+        }
+
+        catch (Exception exception) {
+
+
+            /*
+             * Invalid token.
+             *
+             * Continue the request without authentication.
+             *
+             * Spring Security will return 401
+             * if authentication is required.
+             */
 
             filterChain.doFilter(
                     request,
@@ -85,27 +124,47 @@ public class JwtAuthenticationFilter
 
 
         if (
+
                 username != null
+
                         &&
+
                         SecurityContextHolder
+
                                 .getContext()
+
                                 .getAuthentication()
+
                                 == null
+
         ) {
 
+
             UserDetails userDetails =
+
                     userDetailsService
-                            .loadUserByUsername(username);
+
+                            .loadUserByUsername(
+                                    username
+                            );
 
 
             if (
+
                     jwtService.isTokenValid(
+
                             jwtToken,
+
                             userDetails
+
                     )
+
             ) {
 
-                UsernamePasswordAuthenticationToken authenticationToken =
+
+                UsernamePasswordAuthenticationToken
+                        authenticationToken =
+
                         new UsernamePasswordAuthenticationToken(
 
                                 userDetails,
@@ -113,16 +172,19 @@ public class JwtAuthenticationFilter
                                 null,
 
                                 userDetails.getAuthorities()
+
                         );
 
 
-                authenticationToken
-                        .setDetails(
+                authenticationToken.setDetails(
 
-                                new WebAuthenticationDetailsSource()
+                        new WebAuthenticationDetailsSource()
 
-                                        .buildDetails(request)
-                        );
+                                .buildDetails(
+                                        request
+                                )
+
+                );
 
 
                 SecurityContextHolder
@@ -132,13 +194,20 @@ public class JwtAuthenticationFilter
                         .setAuthentication(
                                 authenticationToken
                         );
+
             }
+
         }
 
 
         filterChain.doFilter(
+
                 request,
+
                 response
+
         );
+
     }
+
 }
